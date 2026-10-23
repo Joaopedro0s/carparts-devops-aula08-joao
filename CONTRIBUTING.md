@@ -43,7 +43,7 @@ Hoje o repositório **não tem** `CHANGELOG.md` nem ferramenta de release config
 
 Regra ativa na `main`: PR obrigatório com 1 aprovação, revisão de code owners, descarte de aprovações antigas a cada novo push, aprovação do último push por outra pessoa, conversas resolvidas, histórico linear, check obrigatório `ci-obrigatorio` (origem GitHub Actions) com branch atualizada, valendo também para administradores, sem force push e sem exclusão.
 
-**Merge queue: indisponível.** Em repositório pessoal o GitHub não oferece merge queue (a API responde HTTP 422); ela só existe em repositório público de uma organização (ou privado em organização com Enterprise Cloud). Por isso a integração é feita por PR aprovado, com o check `ci-obrigatorio` verde. O workflow de CI já tem o gatilho `merge_group`, para funcionar caso o repositório migre para uma organização.
+**Merge queue: indisponível.** Em repositório pessoal o GitHub não oferece merge queue (segundo a documentação do GitHub, e como mostra a evidência do PR do colega Davi, a API responde HTTP 422); ela só existe em repositório público de uma organização (ou privado em organização com Enterprise Cloud). Por isso a integração é feita por PR aprovado, com o check `ci-obrigatorio` verde. O workflow de CI já tem o gatilho `merge_group`, para funcionar caso o repositório migre para uma organização.
 
 ## 6. Medição em duas semanas
 
