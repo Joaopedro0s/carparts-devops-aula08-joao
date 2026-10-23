@@ -1,0 +1,10 @@
+# Code owners da Carparts (Joao Pedro Fonseca, RA 26179863).
+# Cada linha tem pelo menos um humano com acesso de escrita que NAO e o autor dos PRs
+# desta conta. Varios usuarios na mesma linha: basta UM aprovar.
+# prompts/ exige revisao do responsavel humano.
+*              @DaviSouza78 @Joaopedro0s
+/apps/api/     @DaviSouza78 @Joaopedro0s
+/apps/portal/  @DaviSouza78 @Joaopedro0s
+/libs/ui/      @DaviSouza78 @Joaopedro0s
+/prompts/      @DaviSouza78 @Joaopedro0s
+/.github/      @DaviSouza78 @Joaopedro0s

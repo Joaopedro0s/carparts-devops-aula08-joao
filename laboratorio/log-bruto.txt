@@ -1,0 +1,149 @@
+warning: in the working copy of 'apps/api/config.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/api/total.cjs', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'teste.cjs', LF will be replaced by CRLF the next time Git touches it
+
+########## 1) CONFLITO: duas branches privadas mudam a MESMA linha
+warning: in the working copy of 'apps/api/config.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/api/total.cjs', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'teste.cjs', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/api/config.json', LF will be replaced by CRLF the next time Git touches it
+$ git merge --ff-only fix/timeout
+Updating 710e56f..6e65732
+Fast-forward
+ apps/api/config.json | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+########## 1b) rebase da branch atrasada: o Git para no conflito
+$ git rebase main
+Auto-merging apps/api/config.json
+CONFLICT (content): Merge conflict in apps/api/config.json
+Rebasing (1/1)error: could not apply dd9440e... feat(api): aumentar tentativas
+hint: Resolve all conflicts manually, mark them as resolved with
+hint: "git add/rm <conflicted_files>", then run "git rebase --continue".
+hint: You can instead skip this commit: run "git rebase --skip".
+hint: To abort and get back to the state before "git rebase", run "git rebase --abort".
+hint: Disable this message with "git config set advice.mergeConflict false"
+Could not apply dd9440e... feat(api): aumentar tentativas
+$ git status --short
+UU apps/api/config.json
+--- arquivo em conflito:
+<<<<<<< HEAD
+{"timeout": 90, "retries": 1}
+=======
+{"timeout": 30, "retries": 5}
+>>>>>>> dd9440e (feat(api): aumentar tentativas)
+--- resolução: manter as duas intenções (timeout 90 e retries 5)
+$ git add apps/api/config.json
+warning: in the working copy of 'apps/api/config.json', LF will be replaced by CRLF the next time Git touches it
+$ env GIT_EDITOR=true git rebase --continue
+[detached HEAD 0f80a6a] feat(api): aumentar tentativas
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+Successfully rebased and updated refs/heads/feat/mais-tentativas.
+$ node teste.cjs
+PASS: total correto
+$ git merge --ff-only feat/mais-tentativas
+Updating 6e65732..0f80a6a
+Fast-forward
+ apps/api/config.json | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+########## 2) REVERT: desfazer um commit que já está na main, sem reescrever histórico
+warning: in the working copy of 'banner.txt', LF will be replaced by CRLF the next time Git touches it
+$ git revert --no-edit dc8deb04cc715b55a11a35c347d8b89786f0559a
+[fix/reverter-banner 88e5d5e] Revert "feat(portal): incluir banner"
+ Date: Fri Oct 23 02:08:55 2026 -0300
+ 1 file changed, 1 deletion(-)
+ delete mode 100644 banner.txt
+$ git log --oneline -4
+88e5d5e Revert "feat(portal): incluir banner"
+dc8deb0 feat(portal): incluir banner
+0f80a6a feat(api): aumentar tentativas
+6e65732 fix(api): ampliar timeout
+banner.txt removido pelo revert; histórico preservado
+
+########## 3) BISECT: achar automaticamente o commit que quebrou o teste
+warning: in the working copy of 'catalogo.txt', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'catalogo.txt', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'cor.txt', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/api/total.cjs', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'apps/api/total.cjs', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'regras.txt', LF will be replaced by CRLF the next time Git touches it
+$ git bisect start a12b95c5f1c42ee62bbb8d10eb17e7e09480eebd 88e5d5e1a498b210119684fbd06ea1cbcbb530b8
+Bisecting: 1 revision left to test after this (roughly 1 step)
+[7e2591c41149fa96205944e084c51903d86c0bb7] style(ui): definir cor
+$ git bisect run node teste.cjs
+running 'node' 'teste.cjs'
+PASS: total correto
+Bisecting: 0 revisions left to test after this (roughly 0 steps)
+[9a761597beb1edab19161b27499339f1cb0c6997] refactor(api): simplificar total (introduz bug de propósito)
+running 'node' 'teste.cjs'
+node:assert:152
+  throw new AssertionError(obj);
+  ^
+
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+13 !== 30
+
+    at Object.<anonymous> (C:\Users\jeipi\Documents\carparts-devops-aula08-joao\laboratorio-git\teste.cjs:3:8)
+    at Module._compile (node:internal/modules/cjs/loader:1761:14)
+    at Object..js (node:internal/modules/cjs/loader:1893:10)
+    at Module.load (node:internal/modules/cjs/loader:1481:32)
+    at Module._load (node:internal/modules/cjs/loader:1300:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:328:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:245:24)
+    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)
+    at node:internal/main/run_main_module:33:47 {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: 13,
+  expected: 30,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.12.0
+9a761597beb1edab19161b27499339f1cb0c6997 is the first bad commit
+commit 9a761597beb1edab19161b27499339f1cb0c6997
+Author: Joao Pedro Fonseca <laboratorio@exemplo.invalid>
+Date:   Fri Oct 23 02:08:57 2026 -0300
+
+    refactor(api): simplificar total (introduz bug de propósito)
+
+ apps/api/total.cjs | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+bisect found first bad commit
+$ git bisect log
+# bad: [a12b95c5f1c42ee62bbb8d10eb17e7e09480eebd] docs(prompts): registrar regras
+# good: [88e5d5e1a498b210119684fbd06ea1cbcbb530b8] Revert "feat(portal): incluir banner"
+git bisect start 'a12b95c5f1c42ee62bbb8d10eb17e7e09480eebd' '88e5d5e1a498b210119684fbd06ea1cbcbb530b8'
+# good: [7e2591c41149fa96205944e084c51903d86c0bb7] style(ui): definir cor
+git bisect good 7e2591c41149fa96205944e084c51903d86c0bb7
+# bad: [9a761597beb1edab19161b27499339f1cb0c6997] refactor(api): simplificar total (introduz bug de propósito)
+git bisect bad 9a761597beb1edab19161b27499339f1cb0c6997
+# first bad commit: [9a761597beb1edab19161b27499339f1cb0c6997] refactor(api): simplificar total (introduz bug de propósito)
+OK: bisect encontrou exatamente o commit inserido (9a761597beb1edab19161b27499339f1cb0c6997)
+
+########## 3b) recuperar: revert do commit com bug
+$ git revert --no-edit 9a761597beb1edab19161b27499339f1cb0c6997
+[fix/remover-bug d2bea29] Revert "refactor(api): simplificar total (introduz bug de propósito)"
+ Date: Fri Oct 23 02:09:01 2026 -0300
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+$ node teste.cjs
+PASS: total correto
+
+########## RESUMO
+$ git log --graph --oneline --all
+* d2bea29 Revert "refactor(api): simplificar total (introduz bug de propósito)"
+* a12b95c docs(prompts): registrar regras
+* 9a76159 refactor(api): simplificar total (introduz bug de propósito)
+* 7e2591c style(ui): definir cor
+* e595aaf docs: descrever catalogo
+* 88e5d5e Revert "feat(portal): incluir banner"
+* dc8deb0 feat(portal): incluir banner
+* 0f80a6a feat(api): aumentar tentativas
+* 6e65732 fix(api): ampliar timeout
+* 710e56f chore: iniciar laboratorio
+$ git status --short
+$ git fsck --full
+dangling tree 766db8794bab088787b0e5bb1a68a29be7e3c5fc

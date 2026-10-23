@@ -1,0 +1,20 @@
+count: 0
+size: 0 bytes
+in-pack: 30
+packs: 1
+size-pack: 11.83 KiB
+prune-packable: 0
+garbage: 0
+size-garbage: 0 bytes
+
+* feat/politica-carparts
+  main
+  remotes/origin/HEAD -> origin/main
+  remotes/origin/feat/politica-carparts
+  remotes/origin/main
+
+feat/politica-carparts 2026-10-22 21:45:01 -0300
+main 2026-10-22 21:42:45 -0300
+origin 2026-10-22 21:42:45 -0300
+origin/feat/politica-carparts 2026-10-22 21:45:01 -0300
+origin/main 2026-10-22 21:42:45 -0300
