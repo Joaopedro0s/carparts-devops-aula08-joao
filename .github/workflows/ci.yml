@@ -1,0 +1,89 @@
+name: CI Carparts
+
+# Sem filtro "paths" neste workflow: o check obrigatório precisa existir em todo PR
+# e em todo merge_group, senão o PR fica esperando um check que nunca roda.
+on:
+  pull_request:
+    branches: [main]
+  merge_group:
+    types: [checks_requested]
+
+permissions:
+  contents: read
+
+jobs:
+  componentes:
+    name: componentes (${{ matrix.componente }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - componente: apps/api
+            pastas: "apps/api\nscripts"
+          - componente: libs/ui
+            pastas: "libs/ui\nscripts"
+          # o portal importa libs/ui e apps/api, então precisa das duas pastas
+          - componente: apps/portal
+            pastas: "apps/portal\nlibs/ui\napps/api\nscripts"
+          - componente: prompts
+            pastas: "prompts\nscripts"
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+          sparse-checkout: ${{ matrix.pastas }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validar componente
+        run: node scripts/validar.cjs "${{ matrix.componente }}"
+
+  integracao:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+          sparse-checkout: |
+            apps
+            libs
+            prompts
+            scripts
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Testar o monorepo inteiro
+        run: node scripts/validar.cjs all
+
+  segredos:
+    runs-on: ubuntu-latest
+    steps:
+      # histórico completo: um segredo apagado num commit posterior continua no histórico
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Instalar gitleaks (versão fixada)
+        run: go install github.com/zricethezav/gitleaks/v8@v8.24.2
+      - name: Procurar segredos no histórico
+        run: '"$(go env GOPATH)/bin/gitleaks" git --redact --exit-code 1 .'
+
+  # Único check que a proteção da main precisa exigir.
+  gate:
+    name: ci-obrigatorio
+    if: always()
+    needs: [componentes, integracao, segredos]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Falhar se algum job não terminou com sucesso
+        env:
+          COMPONENTES: ${{ needs.componentes.result }}
+          INTEGRACAO: ${{ needs.integracao.result }}
+          SEGREDOS: ${{ needs.segredos.result }}
+        run: |
+          test "$COMPONENTES" = success
+          test "$INTEGRACAO" = success
+          test "$SEGREDOS" = success

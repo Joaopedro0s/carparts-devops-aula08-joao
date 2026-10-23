@@ -1,0 +1,9 @@
+# TROCAR pelos usuários reais antes de ativar a proteção.
+# Cada linha precisa ter pelo menos um humano com acesso de escrita que NÃO seja o autor
+# dos PRs daquela pasta. Vários usuários na mesma linha: basta UM aprovar.
+*              @Joaopedro0s
+/apps/api/     @Joaopedro0s
+/apps/portal/  @Joaopedro0s
+/libs/ui/      @Joaopedro0s
+/prompts/      @Joaopedro0s
+/.github/      @Joaopedro0s
