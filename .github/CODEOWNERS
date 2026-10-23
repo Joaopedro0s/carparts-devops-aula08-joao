@@ -1,9 +1,10 @@
-# TROCAR pelos usuários reais antes de ativar a proteção.
-# Cada linha precisa ter pelo menos um humano com acesso de escrita que NÃO seja o autor
-# dos PRs daquela pasta. Vários usuários na mesma linha: basta UM aprovar.
-*              @Joaopedro0s
-/apps/api/     @Joaopedro0s
-/apps/portal/  @Joaopedro0s
-/libs/ui/      @Joaopedro0s
-/prompts/      @Joaopedro0s
-/.github/      @Joaopedro0s
+# Code owners da Carparts (Joao Pedro Fonseca, RA 26179863).
+# Cada linha tem pelo menos um humano com acesso de escrita que NAO e o autor dos PRs
+# desta conta. Varios usuarios na mesma linha: basta UM aprovar.
+# prompts/ exige revisao do responsavel humano.
+*              @DaviSouza78 @Joaopedro0s
+/apps/api/     @DaviSouza78 @Joaopedro0s
+/apps/portal/  @DaviSouza78 @Joaopedro0s
+/libs/ui/      @DaviSouza78 @Joaopedro0s
+/prompts/      @DaviSouza78 @Joaopedro0s
+/.github/      @DaviSouza78 @Joaopedro0s
